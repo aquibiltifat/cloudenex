@@ -226,83 +226,6 @@
             box-shadow: 0 12px 30px rgba(110, 168, 255, 0.4);
         }
 
-        /* Social Media Icons */
-        .social-icons {
-            display: flex;
-            gap: 16px;
-        }
-
-        .social-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--muted);
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            text-decoration: none;
-        }
-
-        .social-icon::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .social-icon:hover {
-            transform: translateY(-3px);
-            color: #fff;
-        }
-
-        .social-icon:hover::before {
-            opacity: 1;
-        }
-
-        .social-icon.linkedin:hover {
-            background: #0077b5;
-            box-shadow: 0 8px 20px rgba(0, 119, 181, 0.3);
-        }
-
-        .social-icon.instagram:hover {
-            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-            box-shadow: 0 8px 20px rgba(220, 39, 67, 0.3);
-        }
-
-        .social-icon.facebook:hover {
-            background: #1877f2;
-            box-shadow: 0 8px 20px rgba(24, 119, 242, 0.3);
-        }
-
-        .social-icon.youtube:hover {
-            background: #ff0000;
-            box-shadow: 0 8px 20px rgba(255, 0, 0, 0.3);
-        }
-
-        .social-icon.x-twitter:hover {
-            background: #000000;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Custom X (Twitter) Icon */
-        .fa-x-twitter {
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
         /* Mobile Navigation - FIXED */
         .nav-toggle {
             display: none;
@@ -311,13 +234,14 @@
             color: var(--text);
             font-size: 1.5rem;
             cursor: pointer;
-            z-index: 1002;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            z-index: 1001;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .nav-toggle:hover {
@@ -341,11 +265,13 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            visibility: hidden;
         }
 
         .nav-menu.active {
             transform: translateX(0);
             opacity: 1;
+            visibility: visible;
         }
 
         .nav-menu nav ul {
@@ -367,6 +293,12 @@
             text-decoration: none;
             color: var(--text);
             width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu nav a:hover {
+            color: var(--accent);
+            padding-left: 10px;
         }
 
         .nav-menu .cta-bar {
@@ -381,6 +313,30 @@
             text-align: center;
             padding: 16px;
             font-size: 1rem;
+        }
+
+        /* Close button for mobile menu */
+        .menu-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1003;
+        }
+
+        .menu-close:hover {
+            background: rgba(255, 255, 255, 0.05);
         }
 
         /* Hero Section */
@@ -977,11 +933,15 @@
                 <span class="logo-text">Cloudenex</span>
             </div>
 
-            <button class="nav-toggle" aria-label="Toggle navigation">
-                <span>☰</span>
+            <button class="nav-toggle" aria-label="Toggle navigation" id="navToggle">
+                <span class="hamburger-icon">☰</span>
+                <span class="close-icon" style="display: none;">✕</span>
             </button>
 
-            <div class="nav-menu" aria-hidden="true">
+            <div class="nav-menu" id="navMenu">
+                <button class="menu-close" aria-label="Close navigation" id="menuClose">
+                    <span>✕</span>
+                </button>
                 <nav aria-label="Primary">
                     <ul>
                         <li><a href="#home">Home</a></li>
@@ -1505,44 +1465,86 @@
     </footer>
 
     <script>
-        // Mobile Navigation Toggle - FIXED
-        const navToggle = document.querySelector('.nav-toggle');
-        const navMenu = document.querySelector('.nav-menu');
-        
-        if (navToggle && navMenu) {
-            navToggle.addEventListener('click', () => {
-                navMenu.classList.toggle('active');
-                const expanded = navMenu.classList.contains('active');
-                navMenu.setAttribute('aria-hidden', expanded ? 'false' : 'true');
-                
-                // Change hamburger icon to X when menu is open
-                if (expanded) {
-                    navToggle.innerHTML = '<span>✕</span>';
-                    document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
-                } else {
-                    navToggle.innerHTML = '<span>☰</span>';
-                    document.body.style.overflow = ''; // Re-enable scrolling
-                }
-            });
+        // Enhanced Mobile Navigation Toggle - FIXED ICON ISSUE
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+            const menuClose = document.getElementById('menuClose');
+            const hamburgerIcon = document.querySelector('.hamburger-icon');
+            const closeIcon = document.querySelector('.close-icon');
             
-            // Close menu when clicking on links
-            document.querySelectorAll('.nav-menu a').forEach(link => {
-                link.addEventListener('click', () => {
+            // Function to open menu
+            function openMenu() {
+                if (navMenu) {
+                    navMenu.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    // Switch icons
+                    if (hamburgerIcon) hamburgerIcon.style.display = 'none';
+                    if (closeIcon) closeIcon.style.display = 'block';
+                }
+            }
+            
+            // Function to close menu
+            function closeMenu() {
+                if (navMenu) {
                     navMenu.classList.remove('active');
-                    navToggle.innerHTML = '<span>☰</span>';
-                    document.body.style.overflow = ''; // Re-enable scrolling
+                    document.body.style.overflow = '';
+                    // Switch icons
+                    if (hamburgerIcon) hamburgerIcon.style.display = 'block';
+                    if (closeIcon) closeIcon.style.display = 'none';
+                }
+            }
+            
+            // Toggle menu when hamburger is clicked
+            if (navToggle) {
+                navToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (navMenu.classList.contains('active')) {
+                        closeMenu();
+                    } else {
+                        openMenu();
+                    }
+                });
+            }
+            
+            // Close menu when X button is clicked
+            if (menuClose) {
+                menuClose.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeMenu();
+                });
+            }
+            
+            // Close menu when clicking on a link
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', function() {
+                    closeMenu();
                 });
             });
             
             // Close menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!navMenu.contains(e.target) && !navToggle.contains(e.target) && navMenu.classList.contains('active')) {
-                    navMenu.classList.remove('active');
-                    navToggle.innerHTML = '<span>☰</span>';
-                    document.body.style.overflow = ''; // Re-enable scrolling
+            document.addEventListener('click', function(e) {
+                if (navMenu && navMenu.classList.contains('active') && 
+                    !navMenu.contains(e.target) && 
+                    !navToggle.contains(e.target)) {
+                    closeMenu();
                 }
             });
-        }
+            
+            // Close menu with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && navMenu && navMenu.classList.contains('active')) {
+                    closeMenu();
+                }
+            });
+            
+            // Prevent menu from closing when clicking inside it
+            if (navMenu) {
+                navMenu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
 
         // Header scroll effect
         window.addEventListener('scroll', () => {
